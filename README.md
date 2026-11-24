@@ -68,7 +68,7 @@ python app/serve.py
 
 If Copilot is outside your PATH, set `FPL_COPILOT_PATH` to its executable. The app uses only Python's standard library. The CLI adapter uses specific flags; compatibility with every future Copilot release is not guaranteed.
 
-Try: *Find midfielders under my budget by total points over an explicit gameweek interval.* Include the position, budget and period. Each question is independent.
+Try: *Find three midfielders costing at most £6m, ranked by total points over GW29–38, with at least 180 minutes played.* Each question is independent.
 
 ## Engineering and validation
 
