@@ -2,7 +2,7 @@
 
 **Ask football questions. Inspect the evidence.**
 
-A natural-language research agent for historical Fantasy Premier League performance. Find budget midfielders and forwards, compare players, and explore points and underlying attacking metrics over a chosen gameweek range.
+A natural-language research agent for historical Fantasy Premier League performance, using approximately 29,700 player–fixture records from the 2025/26 season. Find budget midfielders and forwards, compare players, and explore performance over a chosen gameweek range.
 
 **Python · JavaScript · HTML/CSS · GitHub Copilot CLI · Tool-calling agent**
 
