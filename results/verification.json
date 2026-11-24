@@ -1,0 +1,180 @@
+{
+  "producer": "verification/verify.py",
+  "created_utc": "2026-11-24T13:58:18.025174+00:00",
+  "python": "3.12.2",
+  "source_sha256_before": "0d09f1f1cb1b5520ec8e2f25238aa652efe2a263d8ca7cb2b6538b27bf86727d",
+  "scope": "Synthetic unit tests, separate raw-data recomputation, contract and HTTP checks; no new live-model evaluation.",
+  "checks": [
+    {
+      "name": "unit_tests",
+      "source_frame": "executed command; see results/local/unit_tests.txt",
+      "expected": 0,
+      "observed": 0,
+      "status": "PASS",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "app",
+        "-p",
+        "test_*.py"
+      ],
+      "program_output": ".....................127.0.0.1 - - [24/Nov/2026 14:58:19] \"POST /api/search HTTP/1.1\" 400 -\n127.0.0.1 - - [24/Nov/2026 14:58:19] \"POST /api/search HTTP/1.1\" 400 -\n127.0.0.1 - - [24/Nov/2026 14:58:19] \"POST /api/search HTTP/1.1\" 403 -\n.127.0.0.1 - - [24/Nov/2026 14:58:19] \"POST /api/search HTTP/1.1\" 502 -\n.127.0.0.1 - - [24/Nov/2026 14:58:20] \"GET /api/snapshot HTTP/1.1\" 200 -\n127.0.0.1 - - [24/Nov/2026 14:58:20] \"GET / HTTP/1.1\" 200 -\n127.0.0.1 - - [24/Nov/2026 14:58:20] \"GET /api/demo HTTP/1.1\" 404 -\n.127.0.0.1 - - [24/Nov/2026 14:58:20] \"POST /api/search HTTP/1.1\" 200 -\n.\n----------------------------------------------------------------------\nRan 25 tests in 2.771s\n\nOK\n"
+    },
+    {
+      "name": "live_data_and_assets",
+      "source_frame": "executed command; see results/local/live_data_and_assets.txt",
+      "expected": 0,
+      "observed": 0,
+      "status": "PASS",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "app/serve.py",
+        "--check"
+      ],
+      "program_output": "[load] 29757 raw fixture rows\n[dedup] 29757 -> 29747; fully identical copies only\n[price cutoff] 29747 -> 29747 fixture rows at/before GW38\n[catalogue] 29747 fixture rows -> 841 player snapshots\n[PASS] Research snapshot, source fingerprints and frontend assets verified\n"
+    },
+    {
+      "name": "recorded_demo_and_assets",
+      "source_frame": "executed command; see results/local/recorded_demo_and_assets.txt",
+      "expected": 0,
+      "observed": 0,
+      "status": "PASS",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "app/serve.py",
+        "--demo",
+        "--check"
+      ],
+      "program_output": "[PASS] Recorded example and frontend assets verified\n"
+    },
+    {
+      "name": "data_contract",
+      "source_frame": "executed command; see results/local/data_contract.txt",
+      "expected": 0,
+      "observed": 0,
+      "status": "PASS",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "verification/check_data_contract.py"
+      ],
+      "program_output": "[load] 29757 raw fixture rows\n[dedup] 29757 -> 29747; fully identical copies only\n[price cutoff] 29747 -> 29747 fixture rows at/before GW38\n[catalogue] 29747 fixture rows -> 841 player snapshots\n[synthetic price filter] 7 -> 3 rows for player 1 at/before GW2\n[synthetic interval filter] 7 -> 3 rows for player 1 in GW1–2\n[price cutoff] 7 -> 5 fixture rows at/before GW2\n[catalogue] 5 fixture rows -> 3 player snapshots\n[comparison filter] 7 -> 3 player/interval fixture rows\n[synthetic price filter] 7 -> 1 rows for player 2 at/before GW2\n[synthetic interval filter] 7 -> 1 rows for player 2 in GW1–2\n[price cutoff] 7 -> 5 fixture rows at/before GW2\n[catalogue] 5 fixture rows -> 3 player snapshots\n[comparison filter] 7 -> 1 player/interval fixture rows\n[synthetic price filter] 7 -> 0 rows for player 3 at/before GW2\n[synthetic interval filter] 7 -> 0 rows for player 3 in GW1–2\n[price cutoff] 7 -> 5 fixture rows at/before GW2\n[catalogue] 5 fixture rows -> 3 player snapshots\n[comparison filter] 7 -> 0 player/interval fixture rows\n[synthetic price filter] 7 -> 3 rows for player 1 at/before GW2\n[synthetic interval filter] 7 -> 3 rows for player 1 in GW1–2\n[price cutoff] 7 -> 5 fixture rows at/before GW2\n[catalogue] 5 fixture rows -> 3 player snapshots\n[comparison filter] 7 -> 3 player/interval fixture rows\n[synthetic price filter] 7 -> 3 rows for player 1 at/before GW4\n[synthetic interval filter] 7 -> 0 rows for player 1 in GW3–4\n[price cutoff] 7 -> 5 fixture rows at/before GW4\n[catalogue] 5 fixture rows -> 3 player snapshots\n[comparison filter] 7 -> 0 player/interval fixture rows\n[price cutoff] 7 -> 7 fixture rows at/before GW38\n[catalogue] 7 fixture rows -> 4 player snapshots\n[candidate filter] 4 -> 1 position/price candidates\n[interval filter] 7 -> 0 fixture rows for GW34–38\n[evidence filter] 1 -> 0 eligible records\n[shortlist limit] 0 -> 0 records\nTaxonomy contract: PASS\nReport: results\\local\\taxonomy_contract-20261124T135823Z-84f74a05\\report.json\n"
+    },
+    {
+      "name": "raw_recomputation",
+      "source_frame": "executed command; see results/local/raw_recomputation.txt",
+      "expected": 0,
+      "observed": 0,
+      "status": "PASS",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "verification/check_intervals.py"
+      ],
+      "program_output": "[pandas dedup] 29757 -> 29747; exact full-row duplicates only\n[load] 29757 raw fixture rows\n[dedup] 29757 -> 29747; fully identical copies only\n[price cutoff] 29747 -> 29747 fixture rows at/before GW38\n[catalogue] 29747 fixture rows -> 841 player snapshots\n[pandas price filter] 29747 -> 3588 rows through GW5\n[pandas snapshot] 3588 -> 741 players\n[pandas window] 29747 -> 3588 rows for GW1–5\n[pandas aggregate] 3588 -> 741 players with interval rows\n[pandas join] 741 -> 741 player records\n[pandas price filter] 29747 -> 7311 rows through GW10\n[pandas snapshot] 7311 -> 747 players\n[pandas window] 29747 -> 7311 rows for GW1–10\n[pandas aggregate] 7311 -> 747 players with interval rows\n[pandas join] 747 -> 747 player records\n[pandas price filter] 29747 -> 14175 rows through GW19\n[pandas snapshot] 14175 -> 780 players\n[pandas window] 29747 -> 3844 rows for GW15–19\n[pandas aggregate] 3844 -> 780 players with interval rows\n[pandas join] 780 -> 780 player records\n[pandas price filter] 29747 -> 29747 rows through GW38\n[pandas snapshot] 29747 -> 841 players\n[pandas window] 29747 -> 4015 rows for GW34–38\n[pandas aggregate] 4015 -> 841 players with interval rows\n[pandas join] 841 -> 841 player records\n[pandas price filter] 29747 -> 29747 rows through GW38\n[pandas snapshot] 29747 -> 841 players\n[pandas window] 29747 -> 29747 rows for GW1–38\n[pandas aggregate] 29747 -> 841 players with interval rows\n[pandas join] 841 -> 841 player records\n[pandas price filter] 29747 -> 29747 rows through GW38\n[pandas snapshot] 29747 -> 841 players\n[pandas window] 29747 -> 29747 rows for GW1–38\n[pandas aggregate] 29747 -> 841 players with interval rows\n[pandas join] 841 -> 841 player records\n[pandas eligibility] 841 -> 144 MID/price/minutes records\n[pandas limit] 144 -> 5 shortlisted players\n[pandas price filter] 29747 -> 14175 rows through GW19\n[pandas snapshot] 14175 -> 780 players\n[pandas window] 29747 -> 14175 rows for GW1–19\n[pandas aggregate] 14175 -> 780 players with interval rows\n[pandas join] 780 -> 780 player records\n[pandas eligibility] 780 -> 129 MID/price/minutes records\n[pandas limit] 129 -> 5 shortlisted players\n[pandas price filter] 29747 -> 3588 rows through GW5\n[pandas snapshot] 3588 -> 741 players\n[pandas window] 29747 -> 3588 rows for GW1–5\n[pandas aggregate] 3588 -> 741 players with interval rows\n[pandas join] 741 -> 741 player records\n[pandas eligibility] 741 -> 73 MID/price/minutes records\n[pandas limit] 73 -> 5 shortlisted players\n[pandas price filter] 29747 -> 29747 rows through GW38\n[pandas snapshot] 29747 -> 841 players\n[pandas window] 29747 -> 4015 rows for GW34–38\n[pandas aggregate] 4015 -> 841 players with interval rows\n[pandas join] 841 -> 841 player records\n[pandas eligibility] 841 -> 73 MID/price/minutes records\n[pandas limit] 73 -> 5 shortlisted players\nSaved pandas cross-checks: results\\local\\raw_recomputation.json\n"
+    },
+    {
+      "name": "javascript_syntax",
+      "source_frame": "executed command; see results/local/javascript_syntax.txt",
+      "expected": 0,
+      "observed": 0,
+      "status": "PASS",
+      "command": [
+        "node",
+        "--check",
+        "app/web/app.js"
+      ],
+      "program_output": ""
+    },
+    {
+      "name": "recorded_example_statistics",
+      "source_frame": "separate raw-CSV pandas recomputation versus saved tool observations",
+      "expected": [
+        {
+          "id": "668",
+          "name": "Granit Xhaka",
+          "points": 20.0,
+          "minutes": 450.0,
+          "price_millions": 5.0,
+          "price_gameweek": 5,
+          "xg": 0.12000000000000001,
+          "xa": 0.4
+        },
+        {
+          "id": "329",
+          "name": "Harry Wilson",
+          "points": 17.0,
+          "minutes": 292.0,
+          "price_millions": 5.4,
+          "price_gameweek": 5,
+          "xg": 0.48,
+          "xa": 0.22999999999999998
+        }
+      ],
+      "observed": [
+        {
+          "id": "668",
+          "name": "Granit Xhaka",
+          "points": 20.0,
+          "minutes": 450.0,
+          "price_millions": 5.0,
+          "price_gameweek": 5,
+          "xg": 0.12000000000000001,
+          "xa": 0.4
+        },
+        {
+          "id": "329",
+          "name": "Harry Wilson",
+          "points": 17.0,
+          "minutes": 292.0,
+          "price_millions": 5.4,
+          "price_gameweek": 5,
+          "xg": 0.48,
+          "xa": 0.22999999999999998
+        }
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "demo_snapshot_label",
+      "source_frame": "HTTP GET /api/snapshot on actual demo server",
+      "expected": true,
+      "observed": true,
+      "status": "PASS"
+    },
+    {
+      "name": "demo_http_answer",
+      "source_frame": "actual demo HTTP response versus results/example.json",
+      "expected": [
+        200,
+        "First five completed gameweeks (GW1–5): Granit Xhaka recorded 20 points and 450 minutes at £5.0m (price recorded GW5). Harry Wilson recorded 17 points and 292 minutes at £5.4m (price recorded GW5). Xhaka had 3 more points, 158 more minutes, and was £0.4m cheaper. Prices are historical, not live deadline-time prices.",
+        true
+      ],
+      "observed": [
+        200,
+        "First five completed gameweeks (GW1–5): Granit Xhaka recorded 20 points and 450 minutes at £5.0m (price recorded GW5). Harry Wilson recorded 17 points and 292 minutes at £5.4m (price recorded GW5). Xhaka had 3 more points, 158 more minutes, and was £0.4m cheaper. Prices are historical, not live deadline-time prices.",
+        true
+      ],
+      "status": "PASS"
+    },
+    {
+      "name": "raw_source_unchanged",
+      "source_frame": "raw CSV fingerprint before versus after checks",
+      "expected": "0d09f1f1cb1b5520ec8e2f25238aa652efe2a263d8ca7cb2b6538b27bf86727d",
+      "observed": "0d09f1f1cb1b5520ec8e2f25238aa652efe2a263d8ca7cb2b6538b27bf86727d",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

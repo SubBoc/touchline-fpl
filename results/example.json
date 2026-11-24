@@ -1,0 +1,182 @@
+{
+  "producer": "verification/export_example.py",
+  "kind": "recorded model response; replay, not a new model request",
+  "recorded_on": "2026-11-19",
+  "source_trace_sha256": "9e7f7c1e076195b107e6cc3906a620f028a3d6de56704b00e6092f2961e94bd6",
+  "source_csv_sha256": "0d09f1f1cb1b5520ec8e2f25238aa652efe2a263d8ca7cb2b6538b27bf86727d",
+  "prompt": "Compare Granit Xhaka and Harry Wilson over the first five completed gameweeks on points, minutes and price.",
+  "answer": "First five completed gameweeks (GW1–5): Granit Xhaka recorded 20 points and 450 minutes at £5.0m (price recorded GW5). Harry Wilson recorded 17 points and 292 minutes at £5.4m (price recorded GW5). Xhaka had 3 more points, 158 more minutes, and was £0.4m cheaper. Prices are historical, not live deadline-time prices.",
+  "snapshot": {
+    "season": "2025_26",
+    "first_gameweek": 1,
+    "last_completed_gameweek": 38,
+    "available_positions": [
+      "MID",
+      "FWD"
+    ],
+    "available_metrics": [
+      "points_per_million",
+      "points",
+      "xg_per90",
+      "xa_per90",
+      "xgi_per90"
+    ],
+    "period_contract": "inclusive start_gameweek/end_gameweek OR trailing window_gameweeks",
+    "price_basis": "latest recorded fixture-row price at/before requested end gameweek",
+    "is_live": false,
+    "forecast_available": false,
+    "limitations": [
+      "injury availability is unknown",
+      "historical prices are not live or verified deadline-time prices",
+      "recorded prices may predate the interval end",
+      "statistics describe played matches, not future returns"
+    ]
+  },
+  "periods": [
+    [
+      1,
+      5
+    ]
+  ],
+  "steps": [
+    {
+      "models": [
+        "gpt-5.6-luna"
+      ],
+      "action": {
+        "tool": "lookup_players",
+        "arguments": {
+          "query": "Granit Xhaka",
+          "limit": 5
+        }
+      },
+      "observation": {
+        "matches": [
+          {
+            "id": "668",
+            "name": "Granit Xhaka",
+            "position": "MID",
+            "team": "Sunderland"
+          }
+        ],
+        "matching_count": 1,
+        "truncated": false,
+        "note": "Identity lookup only; use a statistics tool for period-specific prices and results."
+      }
+    },
+    {
+      "models": [
+        "gpt-5.6-luna"
+      ],
+      "action": {
+        "tool": "lookup_players",
+        "arguments": {
+          "query": "Harry Wilson",
+          "limit": 5
+        }
+      },
+      "observation": {
+        "matches": [
+          {
+            "id": "329",
+            "name": "Harry Wilson",
+            "position": "MID",
+            "team": "Fulham"
+          }
+        ],
+        "matching_count": 1,
+        "truncated": false,
+        "note": "Identity lookup only; use a statistics tool for period-specific prices and results."
+      }
+    },
+    {
+      "models": [
+        "gpt-5.6-luna"
+      ],
+      "action": {
+        "tool": "compare_players",
+        "arguments": {
+          "player_ids": [
+            "668",
+            "329"
+          ],
+          "start_gameweek": 1,
+          "end_gameweek": 5
+        }
+      },
+      "observation": {
+        "snapshot": {
+          "season": "2025_26",
+          "first_gameweek": 1,
+          "last_completed_gameweek": 38,
+          "available_positions": [
+            "MID",
+            "FWD"
+          ],
+          "available_metrics": [
+            "points_per_million",
+            "points",
+            "xg_per90",
+            "xa_per90",
+            "xgi_per90"
+          ],
+          "period_contract": "inclusive start_gameweek/end_gameweek OR trailing window_gameweeks",
+          "price_basis": "latest recorded fixture-row price at/before requested end gameweek",
+          "is_live": false,
+          "forecast_available": false,
+          "limitations": [
+            "injury availability is unknown",
+            "historical prices are not live or verified deadline-time prices",
+            "recorded prices may predate the interval end",
+            "statistics describe played matches, not future returns"
+          ]
+        },
+        "players": [
+          {
+            "id": "668",
+            "name": "Granit Xhaka",
+            "position": "MID",
+            "team": "Sunderland",
+            "price_millions": 5.0,
+            "price_gameweek": 5,
+            "window_start_gw": 1,
+            "window_end_gw": 5,
+            "minutes": 450.0,
+            "points": 20.0,
+            "xg": 0.12000000000000001,
+            "xa": 0.4,
+            "points_per_million": 4.0,
+            "xg_per90": 0.024,
+            "xa_per90": 0.08,
+            "xgi_per90": 0.10400000000000001,
+            "warnings": []
+          },
+          {
+            "id": "329",
+            "name": "Harry Wilson",
+            "position": "MID",
+            "team": "Fulham",
+            "price_millions": 5.4,
+            "price_gameweek": 5,
+            "window_start_gw": 1,
+            "window_end_gw": 5,
+            "minutes": 292.0,
+            "points": 17.0,
+            "xg": 0.48,
+            "xa": 0.22999999999999998,
+            "points_per_million": 3.148148148148148,
+            "xg_per90": 0.14794520547945203,
+            "xa_per90": 0.07089041095890411,
+            "xgi_per90": 0.21883561643835617,
+            "warnings": []
+          }
+        ],
+        "second_minus_first": {
+          "points": -3.0,
+          "minutes": -158.0,
+          "price_millions": 0.4
+        }
+      }
+    }
+  ]
+}

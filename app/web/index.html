@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#173d35">
+  <title>Touchline — FPL research</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="/">touchline<span>.</span></a><span class="header-label">HISTORICAL FPL RESEARCH</span><span class="data-badge">Saved data</span></header>
+  <main>
+    <section class="intro" aria-labelledby="title"><p class="eyebrow">A CLOSER LOOK AT THE GAME</p><h1 id="title">Ask a question.<br>Explore the evidence.</h1><p class="lead">Find and compare midfielders and forwards using historical FPL performance.</p></section>
+    <div class="snapshot-bar"><span class="status-dot" aria-hidden="true"></span><strong id="snapshot-label">Loading saved season…</strong><span class="snapshot-note">Historical prices · No live injury updates</span></div>
+    <section class="research-card" aria-labelledby="question-title">
+      <form id="research-form"><div class="section-heading"><span class="step-label">01 / YOUR QUESTION</span><span class="scope-label">Midfielders &amp; forwards</span></div><h2 id="question-title">What would you like to know?</h2><label class="sr-only" for="research-question">Your FPL research question</label><textarea id="research-question" name="question" rows="4" maxlength="2000" required placeholder="Find three midfielders at most £6m, ranked by recent points per £m, with at least 180 minutes."></textarea><div class="form-footer"><span class="form-hint">Include a budget and the period you want to explore.</span><button id="research-submit" type="submit">Research players <span aria-hidden="true">↗</span></button></div></form>
+      <div class="examples"><span class="example-label">TRY A QUESTION</span><button type="button" data-example="Find three midfielders at most £6m by points per million over the last five completed gameweeks, minimum 180 minutes.">Find value in midfield <span aria-hidden="true">↗</span></button><button type="button" data-example="Compare Granit Xhaka and Harry Wilson over the first five completed gameweeks on points, minutes and price.">Compare two players <span aria-hidden="true">↗</span></button><button type="button" data-example="Which players are currently injured?">Check the agent’s limits <span aria-hidden="true">↗</span></button></div>
+    </section>
+    <section class="answer-card" aria-labelledby="answer-title"><div class="section-heading"><span class="step-label">02 / THE RESPONSE</span><span id="response-tag" class="scope-label">Ready when you are</span></div><h2 id="answer-title">Your research starts here.</h2><p id="research-status" role="status">Ask a question above to explore the saved player data.</p><div id="research-answer" aria-live="polite"></div><details id="evidence-panel" hidden><summary>View the evidence</summary><p class="evidence-help">See the data tools used and the records behind this response.</p><p id="trace-label"></p><pre id="research-evidence"></pre></details></section>
+    <details class="about"><summary>What can this agent do?</summary><div><p>It can search and compare midfielders and forwards by actual points, points per £m, xG/90, xA/90 and xGI/90. A model chooses from a small set of data tools to answer your question.</p><p id="scope-note">The current snapshot is loading.</p><p>Choose any inclusive interval in the saved season: first five means GW1–5, last five means GW34–38, and the full season means GW1–38. Prices use the latest recorded row at or before the interval end. The evidence panel shows the actual tools and gameweek intervals used.</p><p>These statistics describe played matches. Prices are historical; injuries, live data and future points are unavailable. Each question is a separate request, so include the context you need.</p><p>Questions and supporting player statistics use your signed-in Copilot account. Check the evidence before relying on an answer.</p></div></details>
+    <footer><span>Touchline · Historical player research</span><span>Saved evidence. Your judgement.</span></footer>
+  </main>
+  <noscript><p>Please enable JavaScript to use the research form.</p></noscript>
+</body>
+</html>

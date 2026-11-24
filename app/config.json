@@ -1,0 +1,10 @@
+{
+  "season": "2025_26",
+  "first_gameweek": 1,
+  "last_gameweek": 38,
+  "default_window_gameweeks": 5,
+  "minimum_minutes": 180,
+  "source_csv": "data/raw/fpl_25_26_all gw_merged.csv",
+  "source_sha256": "0d09f1f1cb1b5520ec8e2f25238aa652efe2a263d8ca7cb2b6538b27bf86727d",
+  "price_basis": "latest recorded fixture-row price at or before the requested end gameweek"
+}

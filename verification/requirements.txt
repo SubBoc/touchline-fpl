@@ -1,0 +1,2 @@
+# Optional dependency for separate raw-data verification.
+pandas==3.0.1

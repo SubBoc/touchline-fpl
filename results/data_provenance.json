@@ -1,0 +1,16 @@
+{
+  "producer": "verification/check_source.py",
+  "checked_on": "2026-11-24",
+  "repository": "https://github.com/vaastav/Fantasy-Premier-League",
+  "upstream_commit": "f9ed3e8839b0f970e0d5d4a83c5628f6eaee755a",
+  "upstream_path": "data/2025-26/gws/merged_gw.csv",
+  "download_url": "https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/f9ed3e8839b0f970e0d5d4a83c5628f6eaee755a/data/2025-26/gws/merged_gw.csv",
+  "source_csv": "data/raw/fpl_25_26_all gw_merged.csv",
+  "expected_sha256": "0d09f1f1cb1b5520ec8e2f25238aa652efe2a263d8ca7cb2b6538b27bf86727d",
+  "upstream_sha256": "0d09f1f1cb1b5520ec8e2f25238aa652efe2a263d8ca7cb2b6538b27bf86727d",
+  "byte_identical": true,
+  "licence": "MIT",
+  "licence_url": "https://github.com/vaastav/Fantasy-Premier-League/blob/f9ed3e8839b0f970e0d5d4a83c5628f6eaee755a/LICENSE",
+  "local_sha256": "0d09f1f1cb1b5520ec8e2f25238aa652efe2a263d8ca7cb2b6538b27bf86727d",
+  "status": "PASS"
+}

@@ -1,0 +1,1008 @@
+{
+  "taxonomy_version": "1.1",
+  "title": "Touchline historical FPL data dictionary and domain rules",
+  "created_on": "2026-11-12",
+  "updated_on": "2026-11-23",
+  "purpose": "Codify the data meanings, allowed categories, identities, units, aggregation rules and validation coverage used by the current historical research agent.",
+  "artifact_kind": "data_dictionary_with_controlled_vocabularies_and_domain_rules",
+  "important_limit": "This file documents and classifies the domain. Only explicitly identified portions are read by the runtime; the descriptions do not execute themselves. Results live in dated verification reports, not static PASS labels here.",
+  "terminology": {
+    "taxonomy": "Controlled categories such as positions, field categories and ranking metrics.",
+    "domain_model": "Players, fixtures, gameweeks, measurements and their identities, relationships and aggregation rules.",
+    "agent_codification": "This file describes the data contract. Workflow, action validation and model instructions remain in the agent specification and Python POLICY.",
+    "versioning": "The dictionary edition is independent of the app release."
+  },
+  "active_agent": {
+    "prototype_version": "v4",
+    "version_source": "app/version.json",
+    "scope": "Historical player research, not a transfer recommender or squad evaluator.",
+    "config_source": "app/config.json",
+    "season": "2025_26",
+    "first_gameweek": 1,
+    "last_gameweek": 38,
+    "source_csv": "data/raw/fpl_25_26_all gw_merged.csv",
+    "supported_positions": [
+      "MID",
+      "FWD"
+    ],
+    "ranking_metrics": [
+      "points_per_million",
+      "points",
+      "xg_per90",
+      "xa_per90",
+      "xgi_per90"
+    ],
+    "excluded_capabilities": [
+      "live_data",
+      "current_injuries",
+      "future_point_forecasts",
+      "transfer_recommendations",
+      "squad_evaluation",
+      "GK_DEF_research"
+    ],
+    "specification": "app/agent_spec.md",
+    "executed_policy": "app/run_search_agent.py:POLICY",
+    "runtime_taxonomy_consumption": [
+      "original_column_order",
+      "fields.position.allowed_values"
+    ],
+    "model_context": "The model receives the runtime POLICY, snapshot metadata, user question and tool observations. This whole JSON and the raw CSV are not automatically inserted into each model request."
+  },
+  "evidence_scope": {
+    "active_frame": "Included fingerprinted CSV, byte-matched to the pinned upstream source in results/data_provenance.json.",
+    "current_evidence": [
+      "results/example.json",
+      "results/verification.json",
+      "results/data_provenance.json"
+    ],
+    "source_provenance": "Vaastav Anand / Fantasy-Premier-League; pinned source and MIT licence recorded in results/data_provenance.json and data/LICENSE.",
+    "coverage_limit": "The app validates the research inputs; broader semantics of unused source fields are not all enforced."
+  },
+  "row_model": {
+    "observation_unit": "One player-fixture record within the configured season, including zero-minute records.",
+    "key_within_one_season": [
+      "element",
+      "fixture"
+    ],
+    "key_across_seasons": [
+      "season",
+      "element",
+      "fixture"
+    ],
+    "season_column_present": false,
+    "season_instruction": "Season comes from app/config.json; do not join across seasons without a verified identity mapping.",
+    "double_gameweek_rule": "Different fixtures in one gameweek are distinct observations and must be aggregated, not deduplicated.",
+    "duplicate_rule": "Compare full rows. Remove fully identical copies only; reject conflicting player-fixture keys.",
+    "blank_gameweek_rule": "No fixture row is not an observed zero. Under the current reporting convention, a known player with a prior record but no interval rows receives zero interval totals and a warning; a player first recorded after interval end has unavailable totals and prices.",
+    "relationships": [
+      "A season contains gameweeks.",
+      "A fixture is assigned a gameweek.",
+      "A player can have multiple fixture records in the same gameweek.",
+      "Recorded price and club context belong to a dated fixture row."
+    ]
+  },
+  "controlled_vocabularies": {
+    "raw_positions": [
+      "GK",
+      "DEF",
+      "MID",
+      "FWD"
+    ],
+    "research_positions": [
+      "MID",
+      "FWD"
+    ],
+    "ranking_metrics": [
+      "points_per_million",
+      "points",
+      "xg_per90",
+      "xa_per90",
+      "xgi_per90"
+    ],
+    "tools": [
+      "describe_snapshot",
+      "lookup_players",
+      "find_players",
+      "compare_players"
+    ]
+  },
+  "query_contract": {
+    "intervals": "Inclusive start_gameweek and end_gameweek OR trailing window_gameweeks; never both.",
+    "default_window_gameweeks": 5,
+    "minimum_minutes_default": 180,
+    "default_ranking_metric": "points_per_million",
+    "price_cap_inclusive_default": true,
+    "price_ordering": [
+      "GW",
+      "kickoff_time",
+      "fixture"
+    ],
+    "price_rule": "Latest recorded row at or before interval end; return price_gameweek and warn if stale. Not a live or verified deadline price.",
+    "ranking_order": [
+      "metric descending",
+      "minutes descending",
+      "name ascending",
+      "element ID lexicographically ascending"
+    ],
+    "shortlist_limit_bounds": [
+      1,
+      10
+    ],
+    "default_shortlist_limit": 5,
+    "comparison_id_count_bounds": [
+      1,
+      3
+    ],
+    "tool_parameters": {
+      "describe_snapshot": [],
+      "lookup_players": [
+        "query",
+        "limit"
+      ],
+      "find_players": [
+        "position",
+        "max_price_millions",
+        "metric",
+        "window_gameweeks",
+        "minimum_minutes",
+        "limit",
+        "price_inclusive",
+        "start_gameweek",
+        "end_gameweek"
+      ],
+      "compare_players": [
+        "player_ids",
+        "window_gameweeks",
+        "start_gameweek",
+        "end_gameweek"
+      ]
+    },
+    "clarification_policy": "The model policy asks for missing shortlist position/budget and ambiguous or unsupported scope; this is an instruction, not a complete deterministic natural-language parser.",
+    "controller_contract": "Only allowlisted JSON actions execute. Comparison IDs must first be observed. See the Python controller for action validation, period protection and loop limits."
+  },
+  "field_roles": {
+    "identity_and_catalogue": [
+      "element",
+      "name",
+      "position",
+      "team"
+    ],
+    "fixture_and_period_selection": [
+      "GW",
+      "fixture",
+      "kickoff_time"
+    ],
+    "historical_price": [
+      "value"
+    ],
+    "aggregated_measurements": [
+      "minutes",
+      "total_points",
+      "expected_goals",
+      "expected_assists"
+    ],
+    "loader_consistency_only": [
+      "round"
+    ],
+    "retained_but_unused": [
+      "xP",
+      "assists",
+      "bonus",
+      "bps",
+      "clean_sheets",
+      "creativity",
+      "expected_goal_involvements",
+      "expected_goals_conceded",
+      "goals_conceded",
+      "goals_scored",
+      "ict_index",
+      "influence",
+      "modified",
+      "opponent_team",
+      "own_goals",
+      "penalties_missed",
+      "penalties_saved",
+      "red_cards",
+      "saves",
+      "selected",
+      "starts",
+      "team_a_score",
+      "team_h_score",
+      "threat",
+      "transfers_balance",
+      "transfers_in",
+      "transfers_out",
+      "was_home",
+      "yellow_cards",
+      "clearances_blocks_interceptions",
+      "defensive_contribution",
+      "recoveries",
+      "tackles"
+    ]
+  },
+  "categories": {
+    "player_identity": {
+      "label": "Who the player is",
+      "default_timing": "Historical identity; verify season and team at the observation date.",
+      "default_aggregation": "Do not sum."
+    },
+    "fixture_context": {
+      "label": "Which match and gameweek",
+      "default_timing": "Historical fixture and gameweek context. Final scores are observed post-match; this file does not establish deadline-time availability.",
+      "default_aggregation": "Group or join; do not sum identifiers or repeated scores."
+    },
+    "participation": {
+      "label": "Whether and how much the player played",
+      "default_timing": "Post-match observation.",
+      "default_aggregation": "Sum across distinct fixtures only."
+    },
+    "fantasy_scoring": {
+      "label": "Fantasy points and bonus scoring",
+      "default_timing": "Post-match observation.",
+      "default_aggregation": "Sum across distinct fixtures only."
+    },
+    "attacking_events": {
+      "label": "Goals, assists and attacking mistakes",
+      "default_timing": "Post-match observation.",
+      "default_aggregation": "Sum across distinct fixtures only."
+    },
+    "defensive_events": {
+      "label": "Defending and goalkeeping actions",
+      "default_timing": "Post-match observation.",
+      "default_aggregation": "Sum across distinct fixtures only."
+    },
+    "discipline": {
+      "label": "Bookings and dismissals",
+      "default_timing": "Post-match observation.",
+      "default_aggregation": "Sum across distinct fixtures only."
+    },
+    "expected_and_ict": {
+      "label": "Expected statistics and performance indices",
+      "default_timing": "Post-match measures except xP, whose collection timing is uncertain.",
+      "default_aggregation": "Metric-specific; xP must not be summed over repeated fixture rows."
+    },
+    "market": {
+      "label": "Price, ownership and transfers",
+      "default_timing": "Snapshot with unverified collection time.",
+      "default_aggregation": "For current historical prices, select the latest recorded fixture row at/before query end; never sum prices. Other market fields are unused and need verified timing before use."
+    },
+    "provenance": {
+      "label": "Information about the record",
+      "default_timing": "Dataset processing metadata.",
+      "default_aggregation": "Do not sum."
+    }
+  },
+  "original_column_order": [
+    "name",
+    "position",
+    "team",
+    "xP",
+    "assists",
+    "bonus",
+    "bps",
+    "clean_sheets",
+    "creativity",
+    "element",
+    "expected_assists",
+    "expected_goal_involvements",
+    "expected_goals",
+    "expected_goals_conceded",
+    "fixture",
+    "goals_conceded",
+    "goals_scored",
+    "ict_index",
+    "influence",
+    "kickoff_time",
+    "minutes",
+    "modified",
+    "opponent_team",
+    "own_goals",
+    "penalties_missed",
+    "penalties_saved",
+    "red_cards",
+    "round",
+    "saves",
+    "selected",
+    "starts",
+    "team_a_score",
+    "team_h_score",
+    "threat",
+    "total_points",
+    "transfers_balance",
+    "transfers_in",
+    "transfers_out",
+    "value",
+    "was_home",
+    "yellow_cards",
+    "clearances_blocks_interceptions",
+    "defensive_contribution",
+    "recoveries",
+    "tackles",
+    "GW"
+  ],
+  "fields": {
+    "name": {
+      "category": "player_identity",
+      "target_type": "string",
+      "description": "Player display name.",
+      "unit": "text",
+      "note": "Use element with season for joins; names can change or collide.",
+      "current_use": "identity_and_catalogue"
+    },
+    "position": {
+      "category": "player_identity",
+      "target_type": "string",
+      "description": "FPL playing-position category.",
+      "unit": "category",
+      "allowed_values": [
+        "GK",
+        "DEF",
+        "MID",
+        "FWD"
+      ],
+      "note": "Raw FPL categories include all four positions. The research tools support MID/FWD only; do not narrow the raw-file schema to the app subset.",
+      "current_use": "identity_and_catalogue"
+    },
+    "team": {
+      "category": "player_identity",
+      "target_type": "string",
+      "description": "Club name recorded for this row.",
+      "unit": "text",
+      "note": "Not a numeric team ID; club membership can change over time.",
+      "current_use": "identity_and_catalogue"
+    },
+    "xP": {
+      "category": "expected_and_ict",
+      "target_type": "number",
+      "description": "Provider expected-points value, distinct from actual points.",
+      "unit": "FPL points",
+      "definition_status": "provisional_provider_match",
+      "timing": "Unverified; exclude from prediction inputs by default.",
+      "aggregation": "Do not sum across fixtures in the same gameweek.",
+      "note": "A matching public dataset documents an ep_this snapshot with possible post-match contamination. Confirm the actual supplier and collection time. Do not assume it was visible before the deadline.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "assists": {
+      "category": "attacking_events",
+      "target_type": "integer",
+      "description": "Assists credited under FPL rules in this fixture.",
+      "unit": "count",
+      "minimum": 0,
+      "note": "FPL assist awards can differ from other football data providers.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "bonus": {
+      "category": "fantasy_scoring",
+      "target_type": "integer",
+      "description": "Bonus points awarded for this fixture.",
+      "unit": "FPL points",
+      "minimum": 0,
+      "maximum": 3,
+      "note": "Already included in total_points; do not add twice.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "bps": {
+      "category": "fantasy_scoring",
+      "target_type": "integer",
+      "description": "Bonus Points System performance score.",
+      "unit": "BPS score",
+      "note": "Used to determine bonus awards; not itself FPL points. Negative values are possible.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "clean_sheets": {
+      "category": "defensive_events",
+      "target_type": "integer",
+      "description": "Clean-sheet credit recorded for the player in this fixture.",
+      "unit": "indicator",
+      "allowed_values": [
+        0,
+        1
+      ],
+      "note": "FPL eligibility includes playing-time rules. A team shutout does not guarantee every player receives this credit.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "creativity": {
+      "category": "expected_and_ict",
+      "target_type": "number",
+      "description": "ICT measure of chances created for others.",
+      "unit": "index score",
+      "aggregation": "Sum valid fixture-level values only when a total is intended.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "element": {
+      "category": "player_identity",
+      "target_type": "integer",
+      "description": "FPL player identifier.",
+      "unit": "ID",
+      "minimum": 1,
+      "note": "Scope to the season; do not assume IDs match across seasons.",
+      "current_use": "identity_and_catalogue"
+    },
+    "expected_assists": {
+      "category": "expected_and_ict",
+      "target_type": "number",
+      "description": "Model-based expected assist contribution in this fixture.",
+      "unit": "expected assists",
+      "minimum": 0,
+      "aggregation": "Sum across distinct fixtures; not a pre-match forecast.",
+      "current_use": "aggregated_measurements"
+    },
+    "expected_goal_involvements": {
+      "category": "expected_and_ict",
+      "target_type": "number",
+      "description": "Combined expected goal and assist contribution.",
+      "unit": "expected goal involvements",
+      "minimum": 0,
+      "aggregation": "Sum across distinct fixtures.",
+      "relationship": "Approximately expected_goals + expected_assists, allowing independent rounding.",
+      "current_use": "retained_source_column_not_used_by_current_research",
+      "note": "Retained source field. Active xgi_per90 is computed from summed expected_goals plus expected_assists, not this independently rounded column."
+    },
+    "expected_goals": {
+      "category": "expected_and_ict",
+      "target_type": "number",
+      "description": "Shot-quality-based expected scoring contribution in this fixture.",
+      "unit": "expected goals",
+      "minimum": 0,
+      "aggregation": "Sum across distinct fixtures; not a pre-match forecast.",
+      "current_use": "aggregated_measurements"
+    },
+    "expected_goals_conceded": {
+      "category": "expected_and_ict",
+      "target_type": "number",
+      "description": "Expected concession measure attributed to this player.",
+      "unit": "expected goals conceded",
+      "minimum": 0,
+      "aggregation": "Sum across distinct fixtures.",
+      "definition_status": "verify_provider_exposure_window",
+      "note": "Confirm whether the supplier uses only the player's on-pitch exposure. Do not equate it with the final opposition score.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "fixture": {
+      "category": "fixture_context",
+      "target_type": "integer",
+      "description": "Match identifier.",
+      "unit": "ID",
+      "minimum": 1,
+      "note": "Within-season match ID. Different fixture IDs in one gameweek must remain separate.",
+      "current_use": "fixture_and_period_selection"
+    },
+    "goals_conceded": {
+      "category": "defensive_events",
+      "target_type": "integer",
+      "description": "Goals conceded during the player's relevant on-pitch exposure.",
+      "unit": "count",
+      "minimum": 0,
+      "note": "Can differ from the team's full-match goals conceded.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "goals_scored": {
+      "category": "attacking_events",
+      "target_type": "integer",
+      "description": "Goals credited to the player in this fixture.",
+      "unit": "count",
+      "minimum": 0,
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "ict_index": {
+      "category": "expected_and_ict",
+      "target_type": "number",
+      "description": "Combined Influence, Creativity and Threat performance measure.",
+      "unit": "index score",
+      "aggregation": "Use provider index values; verify scaling before recomputing.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "influence": {
+      "category": "expected_and_ict",
+      "target_type": "number",
+      "description": "ICT measure of the player's impact on the match.",
+      "unit": "index score",
+      "aggregation": "Sum valid fixture-level values only when a total is intended.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "kickoff_time": {
+      "category": "fixture_context",
+      "target_type": "string",
+      "description": "Scheduled or recorded kickoff instant.",
+      "unit": "UTC datetime",
+      "format": "date-time",
+      "note": "Parse as timezone-aware ISO 8601. Z means UTC. A current schedule can differ from the schedule known before a historical deadline.",
+      "current_use": "fixture_and_period_selection"
+    },
+    "minutes": {
+      "category": "participation",
+      "target_type": "integer",
+      "description": "Minutes played in this fixture.",
+      "unit": "minutes",
+      "minimum": 0,
+      "warning_if_above": 90,
+      "note": "Review unusual values against supplier conventions rather than silently capping them.",
+      "current_use": "aggregated_measurements"
+    },
+    "modified": {
+      "category": "provenance",
+      "target_type": "boolean",
+      "description": "Supplier flag indicating a changed or corrected record.",
+      "unit": "boolean",
+      "definition_status": "provisional_provider_match",
+      "note": "Exact trigger is unverified. False does not establish that the record is correct.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "opponent_team": {
+      "category": "fixture_context",
+      "target_type": "integer",
+      "description": "Opposing club's numeric identifier.",
+      "unit": "ID",
+      "minimum": 1,
+      "note": "Requires a season-specific team-ID lookup. Do not guess club names from two examples.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "own_goals": {
+      "category": "attacking_events",
+      "target_type": "integer",
+      "description": "Own goals charged to the player.",
+      "unit": "count",
+      "minimum": 0,
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "penalties_missed": {
+      "category": "attacking_events",
+      "target_type": "integer",
+      "description": "Missed penalties charged to the player.",
+      "unit": "count",
+      "minimum": 0,
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "penalties_saved": {
+      "category": "defensive_events",
+      "target_type": "integer",
+      "description": "Penalty saves credited to the player.",
+      "unit": "count",
+      "minimum": 0,
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "red_cards": {
+      "category": "discipline",
+      "target_type": "integer",
+      "description": "Dismissals recorded for the player.",
+      "unit": "count",
+      "minimum": 0,
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "round": {
+      "category": "fixture_context",
+      "target_type": "integer",
+      "description": "Provider gameweek label.",
+      "unit": "gameweek",
+      "minimum": 1,
+      "note": "Matches GW in the supplied rows. Check equality over the full file before treating it as redundant.",
+      "current_use": "loader_consistency_only"
+    },
+    "saves": {
+      "category": "defensive_events",
+      "target_type": "integer",
+      "description": "Goalkeeper saves recorded in the fixture.",
+      "unit": "count",
+      "minimum": 0,
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "selected": {
+      "category": "market",
+      "target_type": "integer",
+      "description": "Number of FPL managers owning the player at the recorded snapshot.",
+      "unit": "manager count",
+      "minimum": 0,
+      "definition_status": "standard_history_convention_confirm_supplier",
+      "note": "This is an absolute count, not a percentage. Ownership percentage requires a compatible total-manager denominator.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "starts": {
+      "category": "participation",
+      "target_type": "integer",
+      "description": "Whether the player was in the starting lineup.",
+      "unit": "indicator",
+      "allowed_values": [
+        0,
+        1
+      ],
+      "note": "Zero can mean substitute appearance or no appearance. minutes > 0 with starts = 0 is valid.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "team_a_score": {
+      "category": "fixture_context",
+      "target_type": "integer",
+      "description": "Away club's recorded goal total.",
+      "unit": "goals",
+      "minimum": 0,
+      "allow_null": true,
+      "timing": "Post-match result in completed historical fixtures; null may mean unplayed.",
+      "note": "The away club is not necessarily the player's opponent.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "team_h_score": {
+      "category": "fixture_context",
+      "target_type": "integer",
+      "description": "Home club's recorded goal total.",
+      "unit": "goals",
+      "minimum": 0,
+      "allow_null": true,
+      "timing": "Post-match result in completed historical fixtures; null may mean unplayed.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "threat": {
+      "category": "expected_and_ict",
+      "target_type": "number",
+      "description": "ICT measure of the player's scoring threat.",
+      "unit": "index score",
+      "aggregation": "Sum valid fixture-level values only when a total is intended.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "total_points": {
+      "category": "fantasy_scoring",
+      "target_type": "integer",
+      "description": "Actual FPL points credited for this player-fixture row.",
+      "unit": "FPL points",
+      "role": "candidate_prediction_target",
+      "note": "Can be negative. Confirm fixture-level scope before aggregating; season tables can use the same label for a season total.",
+      "current_use": "aggregated_measurements"
+    },
+    "transfers_balance": {
+      "category": "market",
+      "target_type": "integer",
+      "description": "Net transfers over the supplier's reporting interval.",
+      "unit": "net transfers",
+      "relationship": "transfers_in - transfers_out",
+      "definition_status": "verify_reporting_window",
+      "note": "Signed quantity. Verify whether the supplier reports gameweek activity and how snapshots behave in double gameweeks.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "transfers_in": {
+      "category": "market",
+      "target_type": "integer",
+      "description": "Transfers bringing the player into managers' squads.",
+      "unit": "transfers",
+      "minimum": 0,
+      "definition_status": "verify_reporting_window",
+      "note": "Commonly gameweek activity in player-history files; verify the reporting interval and snapshot cutoff.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "transfers_out": {
+      "category": "market",
+      "target_type": "integer",
+      "description": "Transfers removing the player from managers' squads.",
+      "unit": "transfers",
+      "minimum": 0,
+      "definition_status": "verify_reporting_window",
+      "note": "Commonly gameweek activity in player-history files; verify the reporting interval and snapshot cutoff.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "value": {
+      "category": "market",
+      "target_type": "integer",
+      "description": "FPL purchase price recorded at the snapshot.",
+      "unit": "GBP 0.1 million",
+      "minimum": 1,
+      "derived_conversion": {
+        "output": "price_millions",
+        "formula": "value / 10",
+        "examples": {
+          "50": 5,
+          "55": 5.5
+        }
+      },
+      "note": "Recorded fixture-row price, selected at/before the query end. Not a live price or a verified deadline-time market snapshot.",
+      "current_use": "historical_price"
+    },
+    "was_home": {
+      "category": "fixture_context",
+      "target_type": "boolean",
+      "description": "Whether the player's club was the home side.",
+      "unit": "boolean",
+      "note": "False means the player's club was away.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "yellow_cards": {
+      "category": "discipline",
+      "target_type": "integer",
+      "description": "Yellow cards recorded for the player.",
+      "unit": "count",
+      "minimum": 0,
+      "note": "Do not impose a red/yellow arithmetic relation without checking the supplier's booking conventions.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "clearances_blocks_interceptions": {
+      "category": "defensive_events",
+      "target_type": "integer",
+      "description": "Combined clearances, blocks and interceptions.",
+      "unit": "actions",
+      "minimum": 0,
+      "note": "The three components are not supplied separately.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "defensive_contribution": {
+      "category": "defensive_events",
+      "target_type": "integer",
+      "description": "Recorded qualifying defensive-action total.",
+      "unit": "actions",
+      "minimum": 0,
+      "definition_status": "verify_dataset_formula",
+      "note": "Treat as an action count, not awarded FPL points. Verify its position-dependent relationship to clearances_blocks_interceptions, tackles and recoveries before recomputing.",
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "recoveries": {
+      "category": "defensive_events",
+      "target_type": "integer",
+      "description": "Recorded ball recoveries.",
+      "unit": "actions",
+      "minimum": 0,
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "tackles": {
+      "category": "defensive_events",
+      "target_type": "integer",
+      "description": "Recorded tackles.",
+      "unit": "actions",
+      "minimum": 0,
+      "current_use": "retained_source_column_not_used_by_current_research"
+    },
+    "GW": {
+      "category": "fixture_context",
+      "target_type": "integer",
+      "description": "Dataset gameweek label.",
+      "unit": "gameweek",
+      "minimum": 1,
+      "note": "Gameweek label used for inclusive historical query bounds. The loader checks agreement with round.",
+      "current_use": "fixture_and_period_selection"
+    }
+  },
+  "parsing_policy": {
+    "preserve_raw": true,
+    "numbers": "Strict finite numeric parsing for active measurements; integer fields have no fractional part. Do not convert spreadsheet-looking dates into guessed decimals.",
+    "required_loader_values": "Invalid required GW, IDs, minutes, points, price, round/position consistency or nonblank xG/xA values reject loading; do not repair raw data.",
+    "missing_measurements": "Blank xG/xA may survive loading; the affected tool aggregate and derived rate are unavailable, not zero-imputed.",
+    "zero_minutes": "Per-90 metrics are null when minutes are zero.",
+    "empty_interval": "Use the explicit known-player convention in row_model; do not confuse an absent row with an observed measurement.",
+    "timestamps": "The runtime orders kickoff_time strings. The separate contract verifier checks explicit UTC parsing; this is not an extra loader-enforced datetime parser.",
+    "unused_fields": "Retain original columns and tokens. Full parsing and semantic checks are required before newly using an inactive column; unused numeric/boolean rules are not all enforced by the current loader.",
+    "schema_drift": "Reject a column-order/schema mismatch rather than silently dropping columns."
+  },
+  "validation_checks": [
+    {
+      "id": "A-001",
+      "rule": "Configured source fingerprint and exact ordered CSV schema",
+      "runtime_enforcement": "app/snapshot.py:load_snapshot",
+      "verification_sources": [
+        "verification/check_data_contract.py"
+      ],
+      "result_location": "Dated runtime comparison reports under results/; no static pass/fail verdict here."
+    },
+    {
+      "id": "A-002",
+      "rule": "Remove only fully identical copies; reject conflicting player-fixture keys",
+      "runtime_enforcement": "app/snapshot.py:load_snapshot",
+      "verification_sources": [
+        "verification/check_data_contract.py"
+      ],
+      "result_location": "Dated runtime comparison reports under results/; no static pass/fail verdict here."
+    },
+    {
+      "id": "A-003",
+      "rule": "Finite integer GW, IDs, minutes, total_points and value; positive IDs/value; nonnegative minutes",
+      "runtime_enforcement": "app/snapshot.py:load_snapshot",
+      "verification_sources": [
+        "verification/check_data_contract.py"
+      ],
+      "result_location": "Dated runtime comparison reports under results/; no static pass/fail verdict here."
+    },
+    {
+      "id": "A-004",
+      "rule": "round equals GW and raw positions belong to the source categories",
+      "runtime_enforcement": "app/snapshot.py:load_snapshot",
+      "verification_sources": [
+        "verification/check_data_contract.py"
+      ],
+      "result_location": "Dated runtime comparison reports under results/; no static pass/fail verdict here."
+    },
+    {
+      "id": "A-005",
+      "rule": "Nonblank xG/xA inputs must be finite and nonnegative; blank values propagate unavailable aggregates",
+      "runtime_enforcement": "app/snapshot.py:load_snapshot; app/search_tools.py:ResearchTools._evidence",
+      "verification_sources": [
+        "verification/check_data_contract.py"
+      ],
+      "result_location": "Dated runtime comparison reports under results/; no static pass/fail verdict here."
+    },
+    {
+      "id": "A-006",
+      "rule": "Available gameweeks match configured inclusive season coverage",
+      "runtime_enforcement": "app/snapshot.py:load_snapshot",
+      "verification_sources": [
+        "verification/check_data_contract.py"
+      ],
+      "result_location": "Dated runtime comparison reports under results/; no static pass/fail verdict here."
+    },
+    {
+      "id": "A-007",
+      "rule": "Explicit bounds or a trailing window, not both; invalid bounds rejected, not clipped",
+      "runtime_enforcement": "app/search_tools.py:ResearchTools.resolve_period",
+      "verification_sources": [
+        "verification/check_data_contract.py"
+      ],
+      "result_location": "Dated runtime comparison reports under results/; no static pass/fail verdict here."
+    },
+    {
+      "id": "A-008",
+      "rule": "Recorded price/context selected at or before end GW; no future price substitution",
+      "runtime_enforcement": "app/snapshot.py:catalogue_at; app/search_tools.py:ResearchTools._evidence",
+      "verification_sources": [
+        "verification/check_data_contract.py"
+      ],
+      "result_location": "Dated runtime comparison reports under results/; no static pass/fail verdict here."
+    },
+    {
+      "id": "A-009",
+      "rule": "Derived metrics obey the documented sums, unit conversion and ratios",
+      "runtime_enforcement": "app/search_tools.py:ResearchTools._evidence",
+      "verification_sources": [
+        "verification/check_data_contract.py"
+      ],
+      "result_location": "Dated runtime comparison reports under results/; no static pass/fail verdict here."
+    },
+    {
+      "id": "A-010",
+      "rule": "Zero minutes gives unavailable per-90 rates; no prior player record gives unavailable measurements",
+      "runtime_enforcement": "app/search_tools.py:ResearchTools._evidence",
+      "verification_sources": [
+        "verification/check_data_contract.py"
+      ],
+      "result_location": "Dated runtime comparison reports under results/; no static pass/fail verdict here."
+    },
+    {
+      "id": "A-011",
+      "rule": "Research positions, metric vocabulary and tool parameters agree with the implementation",
+      "runtime_enforcement": "app/search_tools.py:ResearchTools",
+      "verification_sources": [
+        "verification/check_data_contract.py"
+      ],
+      "result_location": "Dated runtime comparison reports under results/; no static pass/fail verdict here."
+    },
+    {
+      "id": "A-012",
+      "rule": "Kickoff timestamps used for ordering parse as explicit UTC datetimes",
+      "runtime_enforcement": null,
+      "verification_sources": [
+        "verification/check_data_contract.py"
+      ],
+      "result_location": "Dated runtime comparison reports under results/; no static pass/fail verdict here."
+    }
+  ],
+  "derived_fields": [
+    {
+      "name": "price_millions",
+      "aggregation": "latest_price",
+      "source_fields": [
+        "value"
+      ],
+      "scale": 0.1,
+      "unit": "GBP million"
+    },
+    {
+      "name": "price_gameweek",
+      "aggregation": "latest_price_gameweek",
+      "source_fields": [
+        "GW"
+      ],
+      "unit": "gameweek"
+    },
+    {
+      "name": "minutes",
+      "aggregation": "sum",
+      "source_fields": [
+        "minutes"
+      ],
+      "unit": "minutes"
+    },
+    {
+      "name": "points",
+      "aggregation": "sum",
+      "source_fields": [
+        "total_points"
+      ],
+      "unit": "FPL points",
+      "note": "Already includes awarded scoring components; do not add goals, assists or bonus again."
+    },
+    {
+      "name": "xg",
+      "aggregation": "sum",
+      "source_fields": [
+        "expected_goals"
+      ],
+      "unit": "expected goals"
+    },
+    {
+      "name": "xa",
+      "aggregation": "sum",
+      "source_fields": [
+        "expected_assists"
+      ],
+      "unit": "expected assists"
+    },
+    {
+      "name": "points_per_million",
+      "aggregation": "ratio",
+      "numerator_metrics": [
+        "points"
+      ],
+      "denominator_metric": "price_millions",
+      "scale": 1,
+      "unit": "FPL points per GBP million"
+    },
+    {
+      "name": "xg_per90",
+      "aggregation": "ratio",
+      "numerator_metrics": [
+        "xg"
+      ],
+      "denominator_metric": "minutes",
+      "scale": 90,
+      "unit": "expected goals per 90 minutes"
+    },
+    {
+      "name": "xa_per90",
+      "aggregation": "ratio",
+      "numerator_metrics": [
+        "xa"
+      ],
+      "denominator_metric": "minutes",
+      "scale": 90,
+      "unit": "expected assists per 90 minutes"
+    },
+    {
+      "name": "xgi_per90",
+      "aggregation": "ratio",
+      "numerator_metrics": [
+        "xg",
+        "xa"
+      ],
+      "denominator_metric": "minutes",
+      "scale": 90,
+      "unit": "expected goal involvements per 90 minutes"
+    }
+  ],
+  "known_limits": [
+    "No live data source or prediction model.",
+    "Recorded prices have unverified deadline collection timing.",
+    "Unused source columns retain provisional supplier definitions."
+  ],
+  "agent_use_instructions": [
+    "Read the dictionary before loading the CSV.",
+    "Use source-column definitions and units; distinguish the raw position categories from the narrower research scope.",
+    "Keep workflow and model instructions authoritative in app/agent_spec.md and the Python POLICY.",
+    "Do not treat descriptive xG/xA or observed points as future forecasts.",
+    "Validate executable coverage using verification/check_data_contract.py and the existing data checks.",
+    "Write new verification evidence to results/local; retain results/example.json as the recorded demo."
+  ],
+  "reference_sources": [
+    {
+      "id": "S1",
+      "title": "Public FPL dataset data dictionary",
+      "url": "https://github.com/vaastav/Fantasy-Premier-League/blob/master/DATA_DICTIONARY.md",
+      "accessed_on": "2026-11-12",
+      "use": "Source dataset dictionary; supplier byte match and pinned source are recorded in results/data_provenance.json."
+    },
+    {
+      "id": "S2",
+      "title": "Premier League explanation of ICT",
+      "url": "https://www.premierleague.com/en/news/65567",
+      "accessed_on": "2026-11-12",
+      "use": "General meanings of Influence, Creativity and Threat; not evidence that the pasted values are correct."
+    },
+    {
+      "id": "S3",
+      "title": "Premier League explanation of defensive contribution",
+      "url": "https://www.premierleague.com/en/news/4361991/",
+      "accessed_on": "2026-11-12",
+      "use": "Distinguishes qualifying defensive actions from the FPL points awarded; verify dataset-specific implementation and applicable season."
+    }
+  ]
+}
